@@ -1,6 +1,6 @@
+import { useRef, useState } from 'react';
 import Navigation from './components/Navigation';
 import './App.css';
-import { useCallback, useRef, useState } from 'react';
 
 // Song titles
 const songs = ['hey', 'summer', 'ukulele'];
@@ -10,17 +10,17 @@ function App() {
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef(null);
   const progressRef = useRef(null);
-  const onPlayPause = useCallback(() => {
+  const onPlayPause = () => {
+    setIsPlaying(!isPlaying);
     if (isPlaying) {
       audioRef.current.pause();
     } else {
       audioRef.current.play();
     }
-    setIsPlaying(!isPlaying);
-  }, []);
+  };
 
   // Previous song
-  const prevSong = useCallback(() => {
+  const prevSong = () => {
     let songIndex = songs.indexOf(src);
     songIndex--;
 
@@ -29,11 +29,12 @@ function App() {
     }
 
     setSrc(songs[songIndex]);
-    audioRef.current.play();
-  }, []);
+    audioRef.current.pause();
+    setIsPlaying(false);
+  };
 
   // Next song
-  const nextSong = useCallback(() => {
+  const nextSong = () => {
     let songIndex = songs.indexOf(src);
     songIndex++;
 
@@ -42,24 +43,24 @@ function App() {
     }
 
     setSrc(songs[songIndex]);
-    audioRef.current.play();
-  }, []);
+    audioRef.current.pause();
+    setIsPlaying(false);
+  };
 
   // Set progress bar
   const setProgress = (e) => {
-    // const width = e;
-    console.log('width- ', progressRef.current, e.target.getAttribute('width'));
-    // const clickX = e.offsetX;
-    // const duration = audioRef.current.duration;
+    const width = e.target.clientWidth;
+    const clickX = e.nativeEvent.offsetX;
+    const { duration } = audioRef.current;
 
-    // audio.current.currentTime = (clickX / width) * duration;
+    audioRef.current.currentTime = (clickX / width) * duration;
   };
 
   // Update progress bar
   const updateProgress = (e) => {
-    // const { duration, currentTime } = e.srcElement;
-    // const progressPercent = (currentTime / duration) * 100;
-    // progressRef.current.style.width = `${progressPercent}%`;
+    const { duration, currentTime } = e.target;
+    const progressPercent = (currentTime / duration) * 100;
+    progressRef.current.style.width = `${progressPercent}%`;
   };
 
   return (
